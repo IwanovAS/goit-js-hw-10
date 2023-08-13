@@ -1,0 +1,30 @@
+/* Додайте ваші стилі для інших елементів тут */
+
+.cat-info {
+  display: none;
+  margin-top: 20px;
+  max-width: 400px;
+}
+
+.cat-info h2 {
+  margin-top: 0;
+}
+
+.cat-info img {
+  width: 300px;
+  height: auto;
+  float: left;
+  margin-right: 20px;
+}
+
+.cat-info p {
+  margin-bottom: 10px;
+}
+
+.loader,
+.error {
+  display: none;
+  color: red;
+}
+
+/* Додайте ваші стилі для інших елементів тут */
