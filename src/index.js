@@ -81,6 +81,6 @@ const showError = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  showLoader(); // Виклик showLoader без параметра при завантаженні сторінки
+  showLoader(); 
   populateBreedsSelect();
 });
