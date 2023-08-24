@@ -1,34 +1,26 @@
-import axios from "axios";
-
-axios.defaults.headers.common["x-api-key"] = "live_wXcVlAUIAsTAdVBquBwSKfwgIp1x6jStv3rq9WSnCqC82bY4nSDpliFBAxxHAnBe";
+import { fetchBreeds, fetchCatByBreed } from "./cat-api";
 
 const breedSelect = document.querySelector(".breed-select");
 const loader = document.querySelector(".loader");
 const error = document.querySelector(".error");
 const catInfo = document.querySelector(".cat-info");
 
-const fetchBreeds = async () => {
-  try {
-    showLoader("Loading data, please wait...");
-    const response = await axios.get("https://api.thecatapi.com/v1/breeds");
-    return response.data;
-  } catch (error) {
-    showError();
-    return [];
-  }
-};
+let httpRequestCounter = 0;
 
-const fetchCatByBreed = async (breedId) => {
-  try {
-    showLoader("Loading cat information...");
-    const response = await axios.get(
-      `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`
-    );
-    return response.data[0];
-  } catch (error) {
-    showError();
-    return null;
-  }
+const initializeApp = async () => {
+  populateBreedsSelect();
+
+  document.addEventListener("httpRequestStarted", () => {
+    httpRequestCounter++;
+    showLoader("Loading data, please wait...");
+  });
+
+  document.addEventListener("httpRequestFinished", () => {
+    httpRequestCounter--;
+    if (httpRequestCounter === 0) {
+      hideLoader();
+    }
+  });
 };
 
 const populateBreedsSelect = async () => {
@@ -43,9 +35,9 @@ const populateBreedsSelect = async () => {
 
   breedSelect.addEventListener("change", async () => {
     const selectedBreedId = breedSelect.value;
-    showLoader("Loading cat information...");
-    catInfo.style.display = "none";
+    document.dispatchEvent(new Event("httpRequestStarted"));
 
+    catInfo.style.display = "none";
     const catData = await fetchCatByBreed(selectedBreedId);
 
     if (catData) {
@@ -60,7 +52,7 @@ const populateBreedsSelect = async () => {
       catInfo.style.display = "block";
     }
 
-    hideLoader();
+    document.dispatchEvent(new Event("httpRequestFinished"));
   });
 };
 
@@ -80,7 +72,4 @@ const showError = () => {
   error.textContent = "Oops! Something went wrong! Try reloading the page!";
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  showLoader(); 
-  populateBreedsSelect();
-});
+document.addEventListener("DOMContentLoaded", initializeApp);
