@@ -1,21 +1,23 @@
-import { fetchBreeds, fetchCatByBreed } from "./cat-api";
+import { fetchBreeds, fetchCatByBreed } from './cat-api';
 
-const breedSelect = document.querySelector(".breed-select");
-const loader = document.querySelector(".loader");
-const error = document.querySelector(".error");
-const catInfo = document.querySelector(".cat-info");
+const breedSelect = document.querySelector('.breed-select');
+const loader = document.querySelector('.loader');
+const error = document.querySelector('.error');
+const catInfo = document.querySelector('.cat-info');
 
 let httpRequestCounter = 0;
 
 const initializeApp = async () => {
   populateBreedsSelect();
 
-  document.addEventListener("httpRequestStarted", () => {
+  document.addEventListener('httpRequestStarted', () => {
     httpRequestCounter++;
-    showLoader("Loading data, please wait...");
+    if (httpRequestCounter === 1) {
+      showLoader('Loading data, please wait...');
+    }
   });
 
-  document.addEventListener("httpRequestFinished", () => {
+  document.addEventListener('httpRequestFinished', () => {
     httpRequestCounter--;
     if (httpRequestCounter === 0) {
       hideLoader();
@@ -26,18 +28,18 @@ const initializeApp = async () => {
 const populateBreedsSelect = async () => {
   const breeds = await fetchBreeds();
 
-  breeds.forEach((breed) => {
-    const option = document.createElement("option");
+  breeds.forEach(breed => {
+    const option = document.createElement('option');
     option.value = breed.id;
     option.textContent = breed.name;
     breedSelect.appendChild(option);
   });
 
-  breedSelect.addEventListener("change", async () => {
+  breedSelect.addEventListener('change', async () => {
     const selectedBreedId = breedSelect.value;
-    document.dispatchEvent(new Event("httpRequestStarted"));
+    document.dispatchEvent(new Event('httpRequestStarted'));
 
-    catInfo.style.display = "none";
+    catInfo.style.display = 'none';
     const catData = await fetchCatByBreed(selectedBreedId);
 
     if (catData) {
@@ -49,27 +51,27 @@ const populateBreedsSelect = async () => {
         <p><strong>Temperament:</strong> ${temperament}</p>
         <img src="${image}" alt="${name}" />
       `;
-      catInfo.style.display = "block";
+      catInfo.style.display = 'block';
     }
 
-    document.dispatchEvent(new Event("httpRequestFinished"));
+    document.dispatchEvent(new Event('httpRequestFinished'));
   });
 };
 
-const showLoader = (message = "") => {
-  loader.style.display = "block";
-  error.style.display = "none";
+const showLoader = (message = '') => {
+  loader.style.display = 'block';
+  error.style.display = 'none';
   loader.textContent = message;
 };
 
 const hideLoader = () => {
-  loader.style.display = "none";
+  loader.style.display = 'none';
 };
 
 const showError = () => {
-  error.style.display = "block";
-  loader.style.display = "none";
-  error.textContent = "Oops! Something went wrong! Try reloading the page!";
+  error.style.display = 'block';
+  loader.style.display = 'none';
+  error.textContent = 'Oops! Something went wrong! Try reloading the page!';
 };
 
-document.addEventListener("DOMContentLoaded", initializeApp);
+document.addEventListener('DOMContentLoaded', initializeApp);
